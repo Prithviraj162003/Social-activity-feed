@@ -10,17 +10,26 @@ import Activity from './src/models/Activity.js';
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// Enable CORS for frontend (replace with your frontend URL)
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true,
+}));
+
+// JSON body parser
 app.use(express.json());
 
+// Connect to MongoDB
 connectDB();
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 
-// activity endpoint
+// Activities endpoint
 app.get('/api/activities', async (req, res) => {
   try {
     const activities = await Activity.find()
@@ -36,7 +45,9 @@ app.get('/api/activities', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => res.send('Social activity feed API'));
+// Default root route
+app.get('/', (req, res) => res.send('Social Activity Feed API'));
 
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
